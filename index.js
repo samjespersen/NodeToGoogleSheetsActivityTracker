@@ -1,12 +1,8 @@
-const fs = require('fs');
-const readline = require('readline');
-const { google } = require('googleapis');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 const creds = require('./client_secret.json');
-const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
-const args = process.argv;
 require('dotenv').config();
 
+const args = process.argv;
 main(args);
 
 async function main(args) {
