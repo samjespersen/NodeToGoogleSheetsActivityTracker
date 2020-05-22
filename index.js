@@ -12,16 +12,16 @@ async function main(args) {
     const sheet = doc.sheetsByIndex[0];
 
     if(args.length < 3) {
-        const rows = await sheet.getRows({ offset: sheet.rowCount - 2 });
+        const row = await sheet.getRows({ offset: sheet.rowCount - 2 });
         const headers = sheet.headerValues;
 
         let str = '';
-        rows.forEach(row => {
-            headers.forEach(header => {
-                const cell = row[header] ? row[header] : '';
-                str += `${header}:\t\t ${cell}\n`;
-            })
-        })
+        headers.forEach(header => {
+            const cell = row[0][header] ? row[0][header] : '';
+            str += `${header}:\t ${cell}\n`;
+        });
+
+        //add total time elapsed 
 
         console.log(str);
         return;
