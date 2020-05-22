@@ -1,0 +1,22 @@
+{
+  "name": "nodetogooglesheetsactivitytracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samjespersen/NodeToGoogleSheetsActivityTracker.git"
+  },
+  "author": "Sam McLain-Jespersen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/samjespersen/NodeToGoogleSheetsActivityTracker/issues"
+  },
+  "homepage": "https://github.com/samjespersen/NodeToGoogleSheetsActivityTracker#readme",
+  "dependencies": {
+    "googleapis": "^39.2.0"
+  }
+}
