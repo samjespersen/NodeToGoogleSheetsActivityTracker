@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/samjespersen/NodeToGoogleSheetsActivityTracker#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "google-spreadsheet": "^3.0.11",
     "googleapis": "^39.2.0"
   }
 }
