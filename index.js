@@ -34,10 +34,27 @@ async function main(args) {
         return;
     }
 
+    if(args.length > 3) {
+        /*
+        -c: select current row
+            stop: sets end time
+            delete: deletes current row
+            copy: copies current row
+            setDate DATE
+            setTask STRING
+            setType STRING
+            setStart TIME
+            setEnd TIME
+            setNotes STRING
 
 
 
-    
+
+        */
+    }
+
+
+
 }
 
 
