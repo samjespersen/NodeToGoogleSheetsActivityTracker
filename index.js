@@ -11,7 +11,7 @@ async function main(args) {
     await doc.loadInfo();
     const sheet = doc.sheetsByIndex[0];
 
-    if(args.length < 3) {
+    if(args.length == 2) {
         const row = await sheet.getRows({ offset: sheet.rowCount - 2 });
         const headers = sheet.headerValues;
 
@@ -27,6 +27,26 @@ async function main(args) {
         return;
     }
 
-    console.log(args);
+    if(args.length == 3) {
+        const dateTime = getDateTime();
+        const newRow = await sheet.addRow({ Date: dateTime.date, Task: args[2], Type: '', Notes: '', Start: dateTime.time, End: '' });
+        console.log(newRow._rawData);
+        return;
+    }
 
+
+
+
+    
+}
+
+
+
+
+
+function getDateTime() {
+    let date = new Date().toLocaleString().split(', ');
+    let time = date[1];
+    date = date[0];
+    return { date, time }
 }
