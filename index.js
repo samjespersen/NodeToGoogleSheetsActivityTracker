@@ -2,7 +2,7 @@ const { GoogleSpreadsheet } = require('google-spreadsheet');
 const creds = require('./client_secret.json');
 require('dotenv').config();
 
-const args = process.argv;
+const args = process.argv.slice(2);
 main(args);
 
 async function main(args) {
@@ -11,43 +11,73 @@ async function main(args) {
     await doc.loadInfo();
     const sheet = doc.sheetsByIndex[0];
 
-    if(args.length == 2) {
-        const row = await sheet.getRows({ offset: sheet.rowCount - 2 });
-        const headers = sheet.headerValues;
+    if(!args.length) {
 
-        let str = '';
-        headers.forEach(header => {
-            const cell = row[0][header] ? row[0][header] : '';
-            str += `${header}:\t ${cell}\n`;
-        });
+        const row = await fetchRows(sheet, 1);
+        printString(row);
 
         //add total time elapsed 
-
-        console.log(str);
-        return;
     }
 
-    if(args.length == 3) {
+    if(args.length == 1) {
         const dateTime = getDateTime();
-        const newRow = await sheet.addRow({ Date: dateTime.date, Task: args[2], Type: '', Notes: '', Start: dateTime.time, End: '' });
-        console.log(newRow._rawData);
-        return;
+        
+        if(args[0].slice(0,1) !== '-'){
+            const newRow = await sheet.addRow({ Date: dateTime.date, Task: args[0], Type: '', Notes: '', Start: dateTime.time, End: '' });
+            printString([newRow]);
+        } else {
+            console.log("Error: Expected more than one argument.")
+        }
+       
     }
 
-    if(args.length > 3) {
+    if(args.length > 1) {
+
+        if(args[0] == '-d') {
+            if(args.length == 2){
+                const num = Math.round(Number(args[1]));
+                if (typeof num !== "NaN") {
+                    const row = await fetchRows(sheet, num);
+                    printString(row);
+                } else {
+                    console.log("Error: please enter a number. Example: '-d 3' will fetch the three most recent entries");
+                }
+            } else {
+                console.log(`Error: expected 2 arguments, but received ${args.length}`);
+            }
+        }
+
+
         /*
+
         -c: select current row
             stop: sets end time
             delete: deletes current row
             copy: copies current row
-            setDate DATE
-            setTask STRING
-            setType STRING
-            setStart TIME
-            setEnd TIME
-            setNotes STRING
+            setDate 
+                -d 
+                STRING
+            setTask 
+                STRING
+            setType 
+                STRING
+            setStart 
+                -t
+                STRING
+            setEnd 
+                -t
+                STRING
+            setNotes 
+                STRING
 
-
+        -i: manually insert row
+            [   
+            -d insert date || STRING,
+            STRING,
+            STRING,
+            -t insert time || STRING
+            -t insert time || STRING   
+            
 
 
         */
@@ -66,4 +96,37 @@ function getDateTime() {
     let time = date[1];
     date = date[0];
     return { date, time }
+}
+
+function printString(rows) {
+    const headers = rows[0]._sheet.headerValues;
+    let str = '';
+
+    if(rows.length == 1){
+        headers.forEach(header => {
+            const cell = rows[0][header] ? rows[0][header] : '\t';
+            str += `${header}:\t ${cell}\n`;
+        });
+    } else {
+        headers.forEach(header => {
+            str+=`${header}\t\t| `;
+        })
+
+        str += `\n${'-'.repeat(100)}\n`;
+
+        rows.forEach(row => {
+            headers.forEach(header => {
+                const cell = row[header] ? row[header] : '\t';
+                str += `${cell}\t| `;
+            });
+
+            str += `\n${'-'.repeat(100)}\n`;
+        })
+    }
+
+    console.log(str);
+}
+
+async function fetchRows(sheet, num){
+    return await sheet.getRows({ offset: sheet.rowCount - (num + 1) });
 }
