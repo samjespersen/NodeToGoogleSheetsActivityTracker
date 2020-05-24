@@ -23,36 +23,38 @@ async function main(args) {
         const row = await fetchRows(sheet, 1);
         const dateTime = getDateTime();
         
-        if(args[0].slice(0,1) !== '-'){
+        if(args[0].slice(0,1) !== '-') {
+            
+            //set previous row's end time
             row[0].End = dateTime.time;
             await row[0].save();
 
+            //adds new row
             const newRow = await sheet.addRow({ Date: dateTime.date, Task: args[0], Type: '', Notes: '', Start: dateTime.time, End: '' });
 
             printString([newRow]);
-        } else {
-            console.log("Error: Expected more than one argument.")
-        }
+
+        } else { console.log("Error: Expected more than one argument.") }
        
     }
 
     if(args.length > 1) {
 
         if(args[0] == '-d') {
-            if(args.length == 2){
+            
+            if(args.length == 2) {
                 const num = Math.round(Number(args[1]));
+               
                 if (typeof num !== "NaN") {
                     const row = await fetchRows(sheet, num);
                     printString(row);
-                } else {
-                    console.log("Error: please enter a number. Example: '-d 3' will fetch the three most recent entries");
-                }
-            } else {
-                console.log(`Error: expected 2 arguments, but received ${args.length}`);
-            }
+
+                } else { console.log("Error: please enter a number. Example: '-d 3' will fetch the three most recent entries"); }
+
+            } else { console.log(`Error: expected 2 arguments, but received ${args.length}`); }
         }
 
-        if(args[0] == '-c'){
+        if(args[0] == '-c') {
             if(args.length == 2) {
 
             }
