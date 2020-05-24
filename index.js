@@ -20,10 +20,15 @@ async function main(args) {
     }
 
     if(args.length == 1) {
+        const row = await fetchRows(sheet, 1);
         const dateTime = getDateTime();
         
         if(args[0].slice(0,1) !== '-'){
+            row[0].End = dateTime.time;
+            await row[0].save();
+
             const newRow = await sheet.addRow({ Date: dateTime.date, Task: args[0], Type: '', Notes: '', Start: dateTime.time, End: '' });
+
             printString([newRow]);
         } else {
             console.log("Error: Expected more than one argument.")
@@ -45,6 +50,13 @@ async function main(args) {
             } else {
                 console.log(`Error: expected 2 arguments, but received ${args.length}`);
             }
+        }
+
+        if(args[0] == '-c'){
+            if(args.length == 2) {
+
+            }
+
         }
 
 
@@ -91,8 +103,16 @@ async function main(args) {
 
 
 
-function getDateTime() {
-    let date = new Date().toLocaleString().split(', ');
+function getDateTime(dateString = null) {
+
+    let date;
+
+    if(dateString){
+        date = new Date(dateString).toLocaleString().split(', ');
+    } else {
+        date = new Date().toLocaleString().split(', ');
+    }
+
     let time = date[1];
     date = date[0];
     return { date, time }
@@ -130,3 +150,4 @@ function printString(rows) {
 async function fetchRows(sheet, num){
     return await sheet.getRows({ offset: sheet.rowCount - (num + 1) });
 }
+
