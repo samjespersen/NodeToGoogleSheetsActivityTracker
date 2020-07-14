@@ -3,6 +3,7 @@ const creds = require('./client_secret.json');
 require('dotenv').config();
 
 const args = process.argv.slice(2);
+
 main(args);
 
 async function main(args) {
@@ -26,11 +27,13 @@ async function main(args) {
         if(args[0].slice(0,1) !== '-') {
             
             //set previous row's end time
-            row[0].End = dateTime.time;
-            await row[0].save();
+            if(!row[0].End){
+                row[0].End = dateTime.time;
+                await row[0].save();
+            }
 
             //adds new row
-            const newRow = await sheet.addRow({ Date: dateTime.date, Task: args[0], Type: '', Notes: '', Start: dateTime.time, End: '' });
+            const newRow = await sheet.addRow({ Date: dateTime.date, Task: args[0], Type: '', Start: dateTime.time, End: '' });
 
             printString([newRow]);
 
@@ -55,10 +58,25 @@ async function main(args) {
         }
 
         if(args[0] == '-c') {
-            if(args.length == 2) {
+                if(args[1] === 'end') {
+                    const row = await fetchRows(sheet, 1);
+                    if(args.length === 2){
+                        const dateTime = getDateTime();
+                        if(!row[0].End){
+                            row[0].End = dateTime.time;
+                            await row[0].save();
+                        } else { console.log("Current row already has an ending time set.") }
+                    }
 
+                    if(args.length === 3) {
+                        const time = getDateTime(args[2]).time
+                        console.log(time)
+                        if(!row[0].End){
+                            row[0].End = getDateTime(args[2]).time;
+                            await row[0].save();
+                        } else { console.log("Current row already has an ending time set.") }
+                }
             }
-
         }
 
 
@@ -78,11 +96,9 @@ async function main(args) {
             setStart 
                 -t
                 STRING
-            setEnd 
-                -t
-                STRING
-            setNotes 
-                STRING
+
+            -end (auto) OR
+            -end STRING
 
         -i: manually insert row
             [   
@@ -131,7 +147,7 @@ function printString(rows) {
         });
     } else {
         headers.forEach(header => {
-            str+=`${header}\t\t| `;
+            str+=`${header}\t\t  `;
         })
 
         str += `\n${'-'.repeat(100)}\n`;
@@ -139,7 +155,7 @@ function printString(rows) {
         rows.forEach(row => {
             headers.forEach(header => {
                 const cell = row[header] ? row[header] : '\t';
-                str += `${cell}\t| `;
+                str += `${cell}\t  `;
             });
 
             str += `\n${'-'.repeat(100)}\n`;
