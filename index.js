@@ -1,5 +1,6 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const creds = require("./client_secret.json");
+const colors = require('colors');
 require("dotenv").config();
 
 const commands = ["-v", "-view", "-h", "-help", "-s", "-select", "-t", "-task", "-y", "-type", "-d", "-date", "-b", "-begin", "-e", "-end", "-i", "-insert", "-r", "-remove"];
@@ -287,21 +288,19 @@ function getDateTime(dateString = null) {
 
 function printString(rows) {
 	const headers = rows[0]._sheet.headerValues;
-	let str = '';
+	let str = '\n';
 
 	headers.pop();
 
-	str += `\n${"-".repeat(100)}\n`;
-
 	let index = rows.length;
 	rows.forEach((row) => {
-		str += `${index}    ${row.Task} \n     `
+		str += `${index}    ${colors.bold.white(row.Task)} \n     `
 		headers.forEach((header) => {
-			const cell = row[header] ? row[header] : "\t";
+			const cell = row[header] ? colors.grey(row[header]) : "\t";
 			str += `${cell}\t\t`;
 		});
 
-		str += `\n${"-".repeat(100)}\n`;
+		str += `\n${colors.grey("-".repeat(100))}\n`;
 		index--;
 	});
 
