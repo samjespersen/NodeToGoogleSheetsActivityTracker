@@ -114,18 +114,19 @@ async function main(arguments) {
 	}
 
 	//CHECK FOR INITIAL TASK STRING
-
-	//add support for task and type to be two strings next to each other
-
 	if (arguments[0].slice(0, 1) !== "-") {
 		const dateTime = getDateTime();
-		let first = arguments.shift();
 
 		//assign row data
-		rowObj.Task = first;
+		rowObj.Task = arguments.shift();
 		rowObj.Date = dateTime.date;
 		rowObj.Start = dateTime.time;
 		rowObj.Index = 0;
+
+		//check for secondary type string
+		if (arguments[0].slice(0, 1) !== "-") {
+			rowObj.Type = arguments.shift();
+		}
 	}
 
 
@@ -180,10 +181,15 @@ async function main(arguments) {
 				break;
 			case "-type":
 			case "-y":
-				if (typeof arr2 === 'string') {
-					rowObj.Type = arr2;
+				if (!rowObj.Type) {
+					if (typeof arr2 === 'string') {
+						rowObj.Type = arr2;
+					} else {
+						console.log((`Error: argument following ${arr} must be a string surrounded by quotes.`));
+						return;
+					}
 				} else {
-					console.log((`Error: argument following ${arr} must be a string surrounded by quotes.`));
+					console.log(`Error: Cannot set type twice.`);
 					return;
 				}
 				break;
@@ -294,7 +300,7 @@ function printString(rows) {
 
 	let index = rows.length;
 	rows.forEach((row) => {
-		str += `${index}    ${colors.bold.white(row.Task)} \n     `
+		str += `${index}    ${colors.bold(row.Task)} \n     `
 		headers.forEach((header) => {
 			const cell = row[header] ? colors.grey(row[header]) : "\t";
 			str += `${cell}\t\t`;
